@@ -1,6 +1,6 @@
 {
   "name": "kurotodon",
-  "version": "1.0.0",
+  "version": "0.2.7",
   "description": "Kurotodon\r =============",
   "main": "src/app.js",
   "scripts": {
@@ -26,13 +26,13 @@
     "url": "https://github.com/oken1/kurotodon/issues"
   },
   "homepage": "https://github.com/oken1/kurotodon#readme",
+  "dependencies": {
+  },
   "devDependencies": {
     "bestzip": "^1.1.4",
     "electron": "^1.7.9",
     "electron-builder": "^19.43.0",
     "electron-builder-squirrel-windows": "^19.43.0",
-    "electron-packager": "^9.1.0",
-    "electron-prebuilt": "^1.4.13",
     "mkdirp": "^0.5.1",
     "npm-run-all": "^4.1.1",
     "png2icons": "^0.9.1",
