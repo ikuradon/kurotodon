@@ -1,13 +1,6 @@
 'use strict';
 
-// Electronのモジュール
-const electron = require("electron");
-
-// アプリケーションをコントロールするモジュール
-const app = electron.app;
-
-// ウィンドウを作成するモジュール
-const BrowserWindow = electron.BrowserWindow;
+const {app, BrowserWindow, Menu} = require('electron');
 
 // メインウィンドウはGCされないようにグローバル宣言
 let mainWindow;
@@ -30,6 +23,27 @@ app.on('ready', function() {
     }
   });
   mainWindow.loadURL('file://' + __dirname + '/index.html');
+  // Create the Application's main menu
+  var template = [{
+      label: "Application",
+      submenu: [
+          { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+          { type: "separator" },
+          { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+      ]}, {
+      label: "Edit",
+      submenu: [
+          { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+          { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+          { type: "separator" },
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+      ]}
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
   // ウィンドウが閉じられたらアプリも終了
   mainWindow.on('closed', function() {
