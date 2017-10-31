@@ -2,24 +2,54 @@
   "name": "kurotodon",
   "version": "1.0.0",
   "description": "Kurotodon\r =============",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-packager . kurotodon --all --asar --out=build --icon=images/icon128.png"
+    "clean": "rimraf ./build ./dist",
+    "icon": "mkdirp build && npm-run-all icon:*",
+    "icon:osx": "png2icons src/images/icon128.png ./build/icon -icns -hm -i",
+    "icon:win": "png2icons src/images/icon128.png ./build/icon -icop -hm -i",
+    "build": "npm run icon && mkdirp dist && npm-run-all build:*",
+    "build:osx": "electron-builder -m",
+    "build:win": "electron-builder -w",
+    "build:lin": "electron-builder -l"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oken1/kurotodon.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "oken1",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/oken1/kurotodon/issues"
   },
   "homepage": "https://github.com/oken1/kurotodon#readme",
-  "dependencies": {
+  "devDependencies": {
+    "bestzip": "^1.1.4",
     "electron": "^1.7.9",
-    "electron-packager": "^9.1.0"
+    "electron-builder": "^19.43.0",
+    "electron-builder-squirrel-windows": "^19.43.0",
+    "electron-packager": "^9.1.0",
+    "electron-prebuilt": "^1.4.13",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.1",
+    "png2icons": "^0.9.1",
+    "rimraf": "^2.6.2"
+  },
+  "build": {
+    "appId": "com.github.oken1.kurotodon",
+    "files": [
+      "src/**"
+    ],
+    "linux": {
+      "target": "deb",
+      "category": "Network",
+      "maintainer": "oku.ken1@gmail.com"
+    },
+    "win": {
+      "target": "squirrel"
+    }
   }
 }
