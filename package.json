@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-packager . kurotodon --electronVersion=1.6.15 --asar --out=build --icon=images/icon128.png"
+    "build": "electron-packager . kurotodon --all --asar --out=build --icon=images/icon128.png"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/oken1/kurotodon#readme",
   "dependencies": {
+    "electron": "^1.7.9",
     "electron-packager": "^9.1.0"
   }
 }
