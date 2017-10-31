@@ -1,0 +1,21 @@
+{
+  "name": "kurotodon",
+  "version": "1.0.0",
+  "description": "Kurotodon\r =============",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-packager.cmd . kurotodon --electronVersion=1.4.13 --asar --out=build --icon=images/icon128.png"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oken1/kurotodon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oken1/kurotodon/issues"
+  },
+  "homepage": "https://github.com/oken1/kurotodon#readme"
+}
