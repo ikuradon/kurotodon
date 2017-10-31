@@ -49,3 +49,4 @@ kurotodon-win32-x64/views_resources_200_percent.pak
 
 # Build data
 build/
+node_modules
