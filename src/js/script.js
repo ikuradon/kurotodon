@@ -1,33 +1,7 @@
 "use strict";
 
 // 共通データ
-var g_cmn = {
-	cmn_param:	{											// 共通パラメータ
-		font_family:		'',								// - フォント名
-		font_size:			12,								// - フォントサイズ
-		scroll_vertical:	1,								// - ページ全体のスクロールバー(縦)
-		scroll_horizontal:	1,								// - ページ全体のスクロールバー(横)
-		locale:				'ja',							// - 言語
-
-		tootkey:			0,								// - トゥートショートカットキー
-
-		reload_time:		30,								// - 新着読み込み
-		get_count:			40,								// - 一度に取得する件数
-		max_count:			100,							// - タイムラインに表示する最大件数
-		newscroll:			1,								// - 新着ツイートにスクロール
-		follow_mark:		1,								// - 相互フォロー表示
-
-		nowbrowsing_text:	'Now Browsing: ',				// - Now Browsingテキスト
-	},
-	panel:			null,			// パネル
-	account:		null,			// アカウント
-	toolbar_user:	null,			// ツールバーに登録しているユーザ
-	rss_panel:		null,			// RSSパネル
-
-	account_order:	null,			// アカウントの並び順
-	panellist_width: '200px',		// パネルリストの幅
-	current_version: '',			// 現在のバージョン
-};
+var g_cmn = {};
 
 // データ読み込み完了フラグ
 var g_loaded = false;
@@ -41,6 +15,68 @@ var g_testmode = true;
 var manifest;
 
 var g_defwidth, g_defheight, g_defheight_s, g_defheight_l;
+
+////////////////////////////////////////////////////////////////////////////////
+// 開始
+////////////////////////////////////////////////////////////////////////////////
+$( document ).ready( function() {
+	g_cmn = {
+		cmn_param:	{											// 共通パラメータ
+			font_family:		'',								// - フォント名
+			font_size:			12,								// - フォントサイズ
+			scroll_vertical:	1,								// - ページ全体のスクロールバー(縦)
+			scroll_horizontal:	1,								// - ページ全体のスクロールバー(横)
+			locale:				'ja',							// - 言語
+
+			notify_sound_volume:1.0,							// - 通知音量
+
+			tootkey:			0,								// - トゥートショートカットキー
+
+			reload_time:		30,								// - 新着読み込み
+			get_count:			40,								// - 一度に取得する件数
+			max_count:			100,							// - タイムラインに表示する最大件数
+			newscroll:			1,								// - 新着ツイートにスクロール
+			follow_mark:		1,								// - 相互フォロー表示
+
+			nowbrowsing_text:	'Now Browsing: ',				// - Now Browsingテキスト
+
+			color: {											// - 色の設定
+				panel: {
+					background: $( ':root' ).css( '--default-panel-background' ),
+					text: $( ':root' ).css( '--default-panel-text' ),
+				},
+				toot: {
+					background: $( ':root' ).css( '--default-toot-background' ),
+					text: $( ':root' ).css( '--default-toot-text' ),
+					link: $( ':root' ).css( '--default-toot-link' ),
+				},
+				titlebar: {
+					background: $( ':root' ).css( '--default-titlebar-background' ),
+					text: $( ':root' ).css( '--default-titlebar-text' ),
+					fixed: $( ':root' ).css( '--default-titlebar-fixed-background' ),
+				},
+				button: {
+					background: $( ':root' ).css( '--default-button-background' ),
+					text: $( ':root' ).css( '--default-button-text' ),
+				},
+				scrollbar: {
+					background: $( ':root' ).css( '--default-scrollbar-background' ),
+					thumb: $( ':root' ).css( '--default-scrollbar-thumb' ),
+				},
+			},
+		},
+		panel:			null,			// パネル
+		account:		null,			// アカウント
+		toolbar_user:	null,			// ツールバーに登録しているユーザ
+		rss_panel:		null,			// RSSパネル
+
+		account_order:	null,			// アカウントの並び順
+		panellist_width: '200px',		// パネルリストの幅
+		current_version: '',			// 現在のバージョン
+	};
+
+	Init();
+} );
 
 ////////////////////////////////////////////////////////////////////////////////
 // 初期化処理
@@ -123,7 +159,30 @@ function Init()
 					continue;
 				}
 
-				g_cmn.cmn_param[p] = _g_cmn.cmn_param[p];
+				switch ( p )
+				{
+					// 色の設定
+					case 'color':
+						for ( var q in g_cmn.cmn_param[p] )
+						{
+							for ( var r in g_cmn.cmn_param[p][q] )
+							{
+								if ( _g_cmn.cmn_param[p][q] != undefined )
+								{
+									g_cmn.cmn_param[p][q][r] = _g_cmn.cmn_param[p][q][r];
+								}
+								else
+								{
+								console.log(q + ' undefined ' );
+								}
+							}
+						}
+						break;
+
+					default:
+						g_cmn.cmn_param[p] = _g_cmn.cmn_param[p];
+						break;
+				}
 			}
 
 			// 言語ファイル設定
@@ -227,6 +286,9 @@ function Init()
 					cp.SetParam( _g_cmn.panel[i].param );
 					cp.Start();
 				}
+
+				// 色の設定
+				SetColorSettings();
 
 				g_loaded = true;
 			};
@@ -1531,8 +1593,7 @@ function SendRequest( req, callback )
 		// req : instance
 		//       client_id
 		//       client_secret
-		//       username
-		//       password
+		//       code
 		case 'get_access_token':
 			$.ajax( {
 				url: 'https://' + req.instance + '/oauth/token',
@@ -1541,9 +1602,9 @@ function SendRequest( req, callback )
 				data: {
 					client_id: req.client_id,
 					client_secret: req.client_secret,
-					grant_type: 'password',
-					username: req.username,
-					password: req.password,
+					redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+					grant_type: 'authorization_code',
+					code: req.code,
 					scope: 'read write follow',
 				}
 			} ).done( function( data ) {
@@ -2442,8 +2503,27 @@ function Loading( flg, id )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 開始
+// 色の設定をCSSに反映する
 ////////////////////////////////////////////////////////////////////////////////
-$( document ).ready( function() {
-	Init();
-} );
+function SetColorSettings()
+{
+	$( ':root' ).css( {
+		'--panel-background': g_cmn.cmn_param.color.panel.background,
+		'--panel-text': g_cmn.cmn_param.color.panel.text,
+
+		'--toot-background': g_cmn.cmn_param.color.toot.background,
+		'--toot-text': g_cmn.cmn_param.color.toot.text,
+		'--toot-link': g_cmn.cmn_param.color.toot.link,
+
+		'--titlebar-background': g_cmn.cmn_param.color.titlebar.background,
+		'--titlebar-text': g_cmn.cmn_param.color.titlebar.text,
+		'--titlebar-fixed-background': g_cmn.cmn_param.color.titlebar.fixed,
+
+		'--button-background': g_cmn.cmn_param.color.button.background,
+		'--button-text': g_cmn.cmn_param.color.button.text,
+
+		'--scrollbar-background': g_cmn.cmn_param.color.scrollbar.background,
+		'--scrollbar-thumb': g_cmn.cmn_param.color.scrollbar.thumb,
+	} );
+}
+

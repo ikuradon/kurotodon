@@ -70,6 +70,132 @@ Contents.cmnsetting = function( cp )
 			},
 		} );
 
+		$( '#cset_notify_sound_volume' ).slider( {
+			min: 0.0,
+			max: 1.0,
+			step: 0.1,
+			value: g_cmn.cmn_param['notify_sound_volume'],
+			animate: 'fast',
+			slide: function( e, ui ) {
+				$( '#cmnsetting_apply' ).removeClass( 'disabled' );
+				$( '#cset_notify_sound_volume_disp' ).html( ui.value );
+			},
+		} );
+
+		////////////////////////////////////////
+		// 色入力変更処理
+		////////////////////////////////////////
+		cont.find( '.colorcontainer' ).find( 'input[type="text"]' ).on( 'change', function() {
+			var col = $( this ).val();
+
+			$( this ).closest( '.colorcontainer' ).find( 'input[type="color"]' ).val( col );
+		} );
+
+		////////////////////////////////////////
+		// 色選択変更処理
+		////////////////////////////////////////
+		cont.find( '.colorcontainer' ).find( 'input[type="color"]' ).on( 'change', function() {
+			var col = $( this ).val();
+
+			$( this ).closest( '.colorcontainer' ).find( 'input[type="text"]' ).val( col );
+		} );
+
+		////////////////////////////////////////
+		// 色の設定をリセット
+		////////////////////////////////////////
+		$( '#cset_reset_color' ).on( 'click', function( e ) {
+			var colors = new Array(
+				$( ':root' ).css( '--default-panel-background' ),
+				$( ':root' ).css( '--default-panel-text' ),
+				$( ':root' ).css( '--default-toot-background' ),
+				$( ':root' ).css( '--default-toot-text' ),
+				$( ':root' ).css( '--default-toot-link' ),
+				$( ':root' ).css( '--default-titlebar-background' ),
+				$( ':root' ).css( '--default-titlebar-text' ),
+				$( ':root' ).css( '--default-titlebar-fixed-background' ),
+				$( ':root' ).css( '--default-button-background' ),
+				$( ':root' ).css( '--default-button-text' ),
+				$( ':root' ).css( '--default-scrollbar-background' ),
+				$( ':root' ).css( '--default-scrollbar-thumb' )
+			);
+
+			cont.find( '.colorcontainer' ).find( 'input[type="text"]' ).each( function( index ) {
+				$( this ).val( colors[index] ).trigger( 'change' );
+			} );
+
+			e.stopPropagation();
+		} );
+
+		////////////////////////////////////////
+		// 色の設定をトゥート
+		////////////////////////////////////////
+		$( '#cset_toot_color' ).on( 'click', function( e ) {
+			var text = '[Kurotodon_color_v1.1]';
+
+			text += $( '#cset_color_panel_background' ).val() + ',' +
+					$( '#cset_color_panel_text' ).val() + ',' +
+					$( '#cset_color_toot_background' ).val() + ',' +
+					$( '#cset_color_toot_text' ).val() + ',' +
+					$( '#cset_color_toot_link' ).val() + ',' +
+					$( '#cset_color_titlebar_background' ).val() + ',' +
+					$( '#cset_color_titlebar_text' ).val() + ',' +
+					$( '#cset_color_titlebar_fixed' ).val() + ',' +
+					$( '#cset_color_button_background' ).val() + ',' +
+					$( '#cset_color_button_text' ).val() + ',' +
+					$( '#cset_color_scrollbar_background' ).val() + ',' +
+					$( '#cset_color_scrollbar_thumb' ).val();
+
+			text = text.replace( /#/g, '' );
+
+			var pid = IsUnique( 'tootbox' );
+			var left = null;
+			var top = null;
+
+			var SetText = function() {
+				$( '.tootbox .text' ).each( function( e ) {
+					var textbox = $( this );
+
+					var areatext = textbox.val();
+					var pos = textbox.get( 0 ).selectionStart;
+					var bef = areatext.substr( 0, pos );
+					var aft = areatext.substr( pos, areatext.length );
+
+					textbox.val( bef + text + aft )
+						.focus()
+						.trigger( 'keyup' );
+
+					return false;
+				} );
+			};
+
+			if ( pid == null )
+			{
+				var _cp = new CPanel( left, top, g_defwidth, g_defheight_s );
+				_cp.SetType( 'tootbox' );
+				_cp.SetParam( { account_id: '' } );
+				_cp.Start( function() {
+					SetText();
+					$( '.tootbox .text' ).SetPos( 'start' );
+				} );
+			}
+			else
+			{
+				SetText();
+			}
+
+			e.stopPropagation();
+		} );
+
+		////////////////////////////////////////
+		// 試聴ボタンクリック処理
+		////////////////////////////////////////
+		$( '#cset_audition' ).click( function( e ) {
+			$( '#notify_sound' ).get( 0 ).volume = $( '#cset_notify_sound_volume' ).slider( 'value' );
+			$( '#notify_sound' ).get( 0 ).play();
+
+			e.stopPropagation();
+		} );
+
 		////////////////////////////////////////
 		// 設定変更時処理
 		////////////////////////////////////////
@@ -137,6 +263,37 @@ Contents.cmnsetting = function( cp )
 			{
 				setTimeout( function() { $( 'body' ).hide(); setTimeout( function() { $( 'body' ).show(); }, 0 ) }, 0 );
 			}
+
+			// 色の設定
+			g_cmn.cmn_param.color = {
+				panel: {
+					background: $( '#cset_color_panel_background' ).val(),
+					text: $( '#cset_color_panel_text' ).val(),
+				},
+				toot: {
+					background: $( '#cset_color_toot_background' ).val(),
+					text: $( '#cset_color_toot_text' ).val(),
+					link: $( '#cset_color_toot_link' ).val(),
+				},
+				titlebar: {
+					background: $( '#cset_color_titlebar_background' ).val(),
+					text: $( '#cset_color_titlebar_text' ).val(),
+					fixed: $( '#cset_color_titlebar_fixed' ).val(),
+				},
+				button: {
+					background: $( '#cset_color_button_background' ).val(),
+					text: $( '#cset_color_button_text' ).val(),
+				},
+				scrollbar: {
+					background: $( '#cset_color_scrollbar_background' ).val(),
+					thumb: $( '#cset_color_scrollbar_thumb' ).val(),
+				},
+			};
+
+			SetColorSettings();
+
+			// 音量
+			g_cmn.cmn_param['notify_sound_volume'] = $( '#cset_notify_sound_volume' ).slider( 'value' );
 
 			// トゥートショートカットキー
 			g_cmn.cmn_param['tootkey'] = $( 'input[name=cset_tootkey]:checked' ).val();

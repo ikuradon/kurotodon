@@ -71,20 +71,20 @@ div.contents.account {
 }
 
 #account_list div.item.select {
-	background: #204060;
+	background: var(--general-highlight);
 }
 
 /* ログインウィンドウ */
 #login_window {
 	display: none;
 	position: absolute;
-	width: 25rem;
+	width: 32rem;
 	height: 15rem;
 	left: 1rem;
 	z-index: 8900;
 	border: 1px solid #101010;
 	box-shadow: 2px 2px 2px rgba( 0, 0, 0, 0.5 );
-	background: #2e2e2e;
+	background: var(--panel-background);
 	overflow-x: hidden;
 	overflow-y: auto;
 	padding: 4px;
@@ -98,4 +98,8 @@ div.contents.account {
 #login_window > div > span:first-child {
 	display: inline-block;
 	width: 9rem;
+}
+
+#code_input {
+	display: none;
 }
